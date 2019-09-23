@@ -20,6 +20,9 @@ class RoommateApplication(models.Model):
     MESSY = 'M'
 
     # Yourself
+    name = models.CharField(
+        max_length=30,
+    )
     gender = models.CharField(
         max_length=1,
         choices=(

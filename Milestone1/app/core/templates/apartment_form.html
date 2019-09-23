@@ -1,0 +1,21 @@
+{% load crispy_forms_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List a Property</title>
+    {% include 'include.html' %}
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <h1 class="display-4">List a Property</h1>
+        <p class="lead">Your property will be made available to over {{ tenants.count }} tenants</p>
+    </div>
+    <form action="" method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" value="Submit">
+</form>
+</div>
+</body>
+</html>

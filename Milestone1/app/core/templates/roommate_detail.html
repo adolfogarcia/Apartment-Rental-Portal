@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ roommate.name }}</title>
+    {% include 'include.html' %}
+</head>
+<body>
+    <a href="{% url 'roommate_list' %}">BACK</a>
+    <br>
+    {{ roommate.name }}
+</body>
+</html>

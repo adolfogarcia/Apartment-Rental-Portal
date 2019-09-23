@@ -1,0 +1,21 @@
+{% load crispy_forms_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Submit Roommate Application</title>
+    {% include 'include.html' %}
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <h1 class="display-4">List Yourself</h1>
+        <p class="lead">Become a commodity on the open roommate market</p>
+    </div>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="Submit">
+    </form>
+</div>
+</body>
+</html>

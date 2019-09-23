@@ -16,13 +16,21 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from Milestone1.app.src.core import views
+from core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     path('', views.home, name='home'),
     path('tenant_home', views.tenant_home, name='tenant_home'),
     path('landlord_home', views.landlord_home, name='landlord_home'),
+
     path('roommate_form', views.roommate_form, name='roommate_form'),
+    path('roommate_list', views.roommate_list, name='roommate_list'),
+    path('good_roommate_list', views.good_roommate_list, name='good_roommate_list'),
+    path('roommate_detail/<int:roommate_pk>', views.roommate_detail, name='roommate_detail'),
+
     path('apartment_form', views.apartment_form, name='apartment_form'),
+    path('apartment_list', views.apartment_list, name='apartment_list'),
+    path('apartment_detail/<int:apartment_pk>', views.apartment_detail, name='apartment_detail'),
 ]

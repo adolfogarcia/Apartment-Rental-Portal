@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Apartment List</title>
+    {% include 'include.html' %}
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <h1 class="display-4">Apartment List</h1>
+        <p class="lead">{{ user.name }}, say hello to your new apartment</p>
+    </div>
+    {% if apartments %}
+    <div class="card-group">
+        {% for apartment in apartments %}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ apartment.name }}</h5>
+                <pre class="card-text">{{ apartment.address }}</pre>
+                <a href="{% url 'apartment_detail' apartment.pk %}">Go</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        No Apartments
+    {% endif %}
+</div>
+</body>
+</html>

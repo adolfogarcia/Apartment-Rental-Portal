@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tenant Home</title>
+    {% include 'include.html' %}
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <h1 class="display-4">Welcome {{ user.name }}</h1>
+        <p class="lead">What's next?</p>
+    </div>
+    <div class="card-group">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Look for Apartments</h5>
+                <a href="{% url 'apartment_list' %}">Go</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Look for Good Roommates</h5>
+                <a href="{% url 'good_roommate_list' %}">Go</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">View All Roommates</h5>
+                <a href="{% url 'roommate_list' %}">Go</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

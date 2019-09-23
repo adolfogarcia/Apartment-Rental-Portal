@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Roommate List</title>
+    {% include 'include.html' %}
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <h1 class="display-4">Roommate List</h1>
+        <p class="lead">{{ user.name }}, say hello to your new roommates</p>
+    </div>
+    {% if roommates %}
+    <div class="card-group">
+    {% for roommate in roommates %}
+        <div class="card">
+            <img
+                    class="card-image-top"
+                    {% if roommate.gender == roommate.MALE %}
+                    src="http://absorbmarketing.com/wp-content/uploads/2015/01/Picture-of-person.png"
+                    {% else %}
+                    src="https://i.pinimg.com/originals/7b/3d/fe/7b3dfedb05221a208068492f6aa951e2.jpg"
+                    {% endif %}
+                    height="200px"
+                    alt="Apartment"
+            >
+            <div class="card-body">
+                <h5 class="card-title">{{ roommate.name }}</h5>
+                <a href="{% url 'roommate_detail' roommate.pk %}">Go</a>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    {% else %}
+        No Roommates
+    {% endif %}
+</div>
+</body>
+</html>
