@@ -1,8 +1,8 @@
 # How to use:
 *  Install Python3.7
 *  Create a Python virtual environment using your favorite venv tool OR just install everything globally
-*  `pip install` all the requirements listed in `requirements.txt`
 *  `cd app`
+*  `pip install` all the requirements listed in `requirements.txt`
 *  `python manage.py migrate` to create database with necessary tables
 *  `python manage.py runserver` to run locally
 *  Open `localhost:8000` in web browser to view homepage. You did it!
