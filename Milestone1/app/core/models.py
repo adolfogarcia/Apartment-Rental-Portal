@@ -63,6 +63,22 @@ class RoommateApplication(models.Model):
         decimal_places=2,
     )
 
+    def find_compatible_roommates(self):
+        return self.__class__.objects.filter(
+            gender=self.looking_for_gender,
+            year=self.year,
+            cleanliness=self.cleanliness,
+            price_ceiling__gte=self.price_floor,
+            price_floor__lte=self.price_ceiling,
+            smoking=self.smoking,
+        )
+
+    def find_compatible_apartments(self):
+        return Apartment.objects.filter(
+            price__lte=self.price_ceiling,
+            price__gte=self.price_floor,
+        )
+
 
 class Apartment(models.Model):
     name = models.CharField(max_length=20)
@@ -80,3 +96,9 @@ class Apartment(models.Model):
     )
 
     address = models.TextField()
+
+    def find_compatible_tenants(self):
+        return RoommateApplication.objects.filter(
+            price_ceiling__gte=self.price,
+            price_floor__lte=self.price,
+        )
