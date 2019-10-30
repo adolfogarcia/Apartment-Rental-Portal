@@ -80,7 +80,9 @@ class TestViews(TestCase):
         self.assertContains(response, 'Welcome Adolfo')
 
     def test_landlord_home(self):
-        pass
+        """Landlord always redirects to apartment_form to list apartment"""
+        response = self.client.get(reverse('landlord_home'))
+        self.assertTrue(reverse('apartment_form') in response.url)
 
     def test_roommate_form(self):
         pass
