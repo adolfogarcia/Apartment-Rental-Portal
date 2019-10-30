@@ -1,5 +1,5 @@
 from django.test import TestCase
-from models.py import RoommateApplication 
+from core.models import RoommateApplication
 from django.shortcuts import reverse
 
 
@@ -17,6 +17,41 @@ class TestApartmentModel(TestCase):
 
 
 class TestViews(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.roommate = RoommateApplication.objects.create(
+            name="Adolfo",
+            gender=RoommateApplication.MALE,
+            looking_for_gender=RoommateApplication.MALE,
+            year=RoommateApplication.SENIOR,
+            cleanliness=RoommateApplication.CLEAN,
+            smoking=True,
+            price_ceiling=1000,
+            price_floor=500,
+        )
+
+        cls.compat_roommate = RoommateApplication.objects.create(
+            name="Andrew",
+            gender=RoommateApplication.MALE,
+            looking_for_gender=RoommateApplication.MALE,
+            year=RoommateApplication.SENIOR,
+            cleanliness=RoommateApplication.CLEAN,
+            smoking=True,
+            price_ceiling=1000,
+            price_floor=500,
+        )
+
+        cls.incompat_roommate = RoommateApplication.objects.create(
+            name="El Stinko",
+            gender=RoommateApplication.FEMALE,
+            looking_for_gender=RoommateApplication.FEMALE,
+            year=RoommateApplication.FRESHMAN,
+            cleanliness=RoommateApplication.MESSY,
+            smoking=False,
+            price_ceiling=1500,
+            price_floor=1100,
+        )
+
     def test_home(self):
         pass
 
@@ -36,18 +71,9 @@ class TestViews(TestCase):
         pass
 
     def test_roommate_detail(self):
-        roommate1 = RoommateApplication.objects.create(
-            name="Adolfo",
-            gender="M",
-            year="N",
-            cleanliness="C",
-            smoking=True
-            )
-        
-        view = self.client.get(reverse('roommate_detail', kwargs={'roommate_pk':roommate1.pk}))       
-        self.assertEquals(view.status_code, 200)
-        self.assertContains
-        pass
+        response = self.client.get(reverse('roommate_detail', kwargs={'roommate_pk': self.roommate.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertInHTML('Adolfo', response.content)
 
     # Does not need to be tested! Has no special functionality
     # def test_apartment_form(pass):
