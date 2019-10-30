@@ -2,6 +2,8 @@ from django.test import TestCase
 from core.models import RoommateApplication
 from django.shortcuts import reverse
 
+from django.contrib.sessions.middleware import SessionMiddleware
+
 
 class TestRoommateModel(TestCase):
     def test_find_compatible_roommates(self):
@@ -53,10 +55,27 @@ class TestViews(TestCase):
         )
 
     def test_home(self):
-        pass
+        response = self.client.get(reverse('home'))
+        self.assertInHTML('ApartFinder', response.content)
+        self.assertInHTML('Tenant', response.content)
+        self.assertInHTML('Landlord', response.content)
 
     def test_tenant_home(self):
-        pass
+        """Tenant_home -> roommate_form if not logged in (to create account),
+        otherwise renders tenant_home"""
+        tenant_home_url = reverse('tenant_home')
+        response = self.client.get(tenant_home_url)
+
+        # Should redirect to roommate_form
+        self.assertTrue(reverse('roommate_form') in response.url)
+
+        # Make the user into Adolfo
+        self.client.session['user'] = self.roommate.pk
+        self.client.session.save()
+
+        # Try again now that logged in
+        response = self.client.get(tenant_home_url)
+        self.assertTemplateUsed(response, 'tenant_home.html')
 
     def test_landlord_home(self):
         pass

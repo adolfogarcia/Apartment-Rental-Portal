@@ -51,8 +51,13 @@ class RoommateApplication(models.Model):
     smoking = models.BooleanField()
 
     # Looking for
-    looking_for_gender = models.BooleanField(
-        null=True,
+    looking_for_gender = models.CharField(
+        max_length=1,
+        choices=(
+            (MALE, 'Male'),
+            (FEMALE, 'Female'),
+            (ANY, 'Any'),
+        ),
     )
     price_floor = models.DecimalField(
         max_digits=12,
@@ -64,14 +69,20 @@ class RoommateApplication(models.Model):
     )
 
     def find_compatible_roommates(self):
-        return self.__class__.objects.filter(
-            gender=self.looking_for_gender,
+        roommates = self.__class__.objects.filter(
             year=self.year,
             cleanliness=self.cleanliness,
             price_ceiling__gte=self.price_floor,
             price_floor__lte=self.price_ceiling,
             smoking=self.smoking,
         )
+
+        if self.looking_for_gender != self.ANY:
+            roommates = roommates.filter(
+                looking_for_gender=self.looking_for_gender,
+            )
+
+        return roommates
 
     def find_compatible_apartments(self):
         return Apartment.objects.filter(
