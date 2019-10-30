@@ -1,4 +1,6 @@
 from django.test import TestCase
+from models.py import RoommateApplication 
+from django.shortcuts import reverse
 
 
 class TestRoommateModel(TestCase):
@@ -34,6 +36,17 @@ class TestViews(TestCase):
         pass
 
     def test_roommate_detail(self):
+        roommate1 = RoommateApplication.objects.create(
+            name="Adolfo",
+            gender="M",
+            year="N",
+            cleanliness="C",
+            smoking=True
+            )
+        
+        view = self.client.get(reverse('roommate_detail', kwargs={'roommate_pk':roommate1.pk}))       
+        self.assertEquals(view.status_code, 200)
+        self.assertContains
         pass
 
     # Does not need to be tested! Has no special functionality
