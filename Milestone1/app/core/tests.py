@@ -95,8 +95,7 @@ class TestViews(TestCase):
 
     def test_roommate_detail(self):
         response = self.client.get(reverse('roommate_detail', kwargs={'roommate_pk': self.roommate.pk}))
-        self.assertEqual(response.status_code, 200)
-        self.assertInHTML('Adolfo', response.content)
+        self.assertContains(response, 'Adolfo')
 
     # Does not need to be tested! Has no special functionality
     # def test_apartment_form(pass):
