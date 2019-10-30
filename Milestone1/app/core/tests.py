@@ -56,9 +56,9 @@ class TestViews(TestCase):
 
     def test_home(self):
         response = self.client.get(reverse('home'))
-        self.assertInHTML('ApartFinder', response.content)
-        self.assertInHTML('Tenant', response.content)
-        self.assertInHTML('Landlord', response.content)
+        self.assertContains(response, 'ApartFinder')
+        self.assertContains(response, 'Tenant')
+        self.assertContains(response, 'Landlord')
 
     def test_tenant_home(self):
         """Tenant_home -> roommate_form if not logged in (to create account),
@@ -70,12 +70,14 @@ class TestViews(TestCase):
         self.assertTrue(reverse('roommate_form') in response.url)
 
         # Make the user into Adolfo
-        self.client.session['user'] = self.roommate.pk
-        self.client.session.save()
+        session = self.client.session
+        session['user'] = self.roommate.pk
+        session.save()
 
         # Try again now that logged in
         response = self.client.get(tenant_home_url)
         self.assertTemplateUsed(response, 'tenant_home.html')
+        self.assertContains(response, 'Welcome Adolfo')
 
     def test_landlord_home(self):
         pass
