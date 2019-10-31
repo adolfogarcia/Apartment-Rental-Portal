@@ -1,24 +1,11 @@
 from django.test import TestCase
-from core.models import RoommateApplication
+from core.models import RoommateApplication, Apartment
+from core.forms import RoommateForm
+
 from django.shortcuts import reverse
 
-from django.contrib.sessions.middleware import SessionMiddleware
 
-
-class TestRoommateModel(TestCase):
-    def test_find_compatible_roommates(self):
-        pass
-
-    def test_find_compatible_apartments(self):
-        pass
-
-
-class TestApartmentModel(TestCase):
-    def test_find_compatible_tenants(self):
-        pass
-
-
-class TestViews(TestCase):
+class ApartmentTestCase(TestCase):
     def login(self, roommate):
         session = self.client.session
         session['user'] = roommate.pk
@@ -59,6 +46,65 @@ class TestViews(TestCase):
             price_floor=1100,
         )
 
+        cls.compat_apartment = Apartment.objects.create(
+            name='The House From Nightmare on Elm Street',
+            num_rooms=1,
+            num_bath=1,
+            num_kitchen=1,
+            price=750.00,
+            address='123 Elm Street',  # Halloween themed
+        )
+
+        cls.incompat_apartment = Apartment.objects.create(
+            name='The House of Usher',  # Halloween themed
+            num_rooms=6,
+            num_bath=6,
+            num_kitchen=6,
+            price=6666.66,
+            address='123 Fake St.',
+        )
+
+
+class TestRoommateModel(ApartmentTestCase):
+    def test_find_compatible_roommates(self):
+        self.assertQuerysetEqual(
+            self.roommate.find_compatible_roommates(),
+            [repr(self.compat_roommate)],  # Doesn't include self or incompat
+        )
+
+    def test_find_compatible_apartments(self):
+        self.assertQuerysetEqual(
+            self.roommate.find_compatible_apartments(),
+            [repr(self.compat_apartment)],  # Don't include incompat
+        )
+
+
+class TestRoommateForm(ApartmentTestCase):
+    def test_validate(self):
+        self.assertFalse(
+            # Make sure custom validation script works
+            RoommateForm(data={
+                'name': "Fudgo",
+                'gender': RoommateApplication.MALE,
+                'looking_for_gender': RoommateApplication.MALE,
+                'year': RoommateApplication.SENIOR,
+                'cleanliness': RoommateApplication.CLEAN,
+                'smoking': True,
+                'price_ceiling': 500,  # Herein lies the error
+                'price_floor': 1000,
+            }).is_valid()
+        )
+
+
+class TestApartmentModel(ApartmentTestCase):
+    def test_find_compatible_tenants(self):
+        self.assertQuerysetEqual(
+            self.compat_apartment.find_compatible_tenants().order_by('name'),
+            [repr(self.roommate), repr(self.compat_roommate)],
+        )
+
+
+class TestViews(ApartmentTestCase):
     def test_home(self):
         response = self.client.get(reverse('home'))
         self.assertContains(response, 'ApartFinder')
@@ -99,7 +145,7 @@ class TestViews(TestCase):
         _ = self.client.get(roommate_form_url)
         csrftoken = self.client.cookies['csrftoken']
 
-        # Submit the form data to URL
+        # Submit the correct form data to URL
         self.client.post(roommate_form_url, data={
             'csrfmiddlewaretoken': csrftoken,
             'name': 'Testdudette',
@@ -152,13 +198,19 @@ class TestViews(TestCase):
         roommate_url = roommate.get_absolute_url()
         response = self.client.get(roommate_url)
         self.assertContains(response, roommate.name)
-
-    # Does not need to be tested! Has no special functionality
-    # def test_apartment_form(pass):
-    #     pass
+        self.assertTemplateUsed(response, 'roommate_detail.html')
 
     def test_apartment_list(self):
-        pass
+        """Make sure all apartments are on list"""
+        response = self.client.get(reverse('apartment_list'))
+
+        self.assertContains(response, self.compat_apartment.name)
+        self.assertContains(response, self.incompat_apartment.name)
 
     def test_apartment_detail(self):
-        pass
+        """Make sure apartment detail renders for an apartment"""
+        apartment = self.compat_apartment
+        url = apartment.get_absolute_url()
+        response = self.client.get(url)
+        self.assertContains(response, apartment.name)
+        self.assertTemplateUsed(response, 'apartment_detail.html')
