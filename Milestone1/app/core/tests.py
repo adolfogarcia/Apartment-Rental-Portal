@@ -85,7 +85,33 @@ class TestViews(TestCase):
         self.assertTrue(reverse('apartment_form') in response.url)
 
     def test_roommate_form(self):
-        pass
+        """Test that submitting the roommate form creates the roommate on the list"""
+        roommate_form_url = reverse('roommate_form')
+
+        # Make sure roommate has not already been created
+        response = self.client.get(reverse('roommate_list'))
+        self.assertNotContains(response, 'Testdudette')
+
+        # Sets csrftoken
+        _ = self.client.get(roommate_form_url)
+        csrftoken = self.client.cookies['csrftoken']
+
+        # Submit the form data to URL
+        self.client.post(roommate_form_url, data={
+            'csrfmiddlewaretoken': csrftoken,
+            'name': 'Testdudette',
+            'gender': 'F',
+            'year': 'G',
+            'cleanliness': 'I',
+            'smoking': True,
+            'looking_for_gender': 'A',
+            'price_floor': 500,
+            'price_ceiling': 1500,
+        })
+
+        # Now roommate should be created
+        response = self.client.get(reverse('roommate_list'))
+        self.assertContains(response, 'Testdudette')
 
     def test_roommate_list(self):
         pass

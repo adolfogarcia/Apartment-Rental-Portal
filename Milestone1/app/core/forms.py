@@ -9,8 +9,8 @@ class RoommateForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        price_floor = cleaned_data.get["price_floor"]
-        price_ceiling = cleaned_data.get["price_ceiling"]
+        price_floor = cleaned_data["price_floor"]
+        price_ceiling = cleaned_data["price_ceiling"]
 
         if price_floor > price_ceiling:
             self.add_error(
