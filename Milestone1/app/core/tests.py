@@ -148,8 +148,10 @@ class TestViews(TestCase):
         self.assertNotContains(response, self.incompat_roommate.name)
 
     def test_roommate_detail(self):
-        response = self.client.get(reverse('roommate_detail', kwargs={'roommate_pk': self.roommate.pk}))
-        self.assertContains(response, 'Adolfo')
+        roommate = self.roommate
+        roommate_url = roommate.get_absolute_url()
+        response = self.client.get(roommate_url)
+        self.assertContains(response, roommate.name)
 
     # Does not need to be tested! Has no special functionality
     # def test_apartment_form(pass):

@@ -1,4 +1,5 @@
 from django.db import models
+from django.shortcuts import reverse
 
 
 class RoommateApplication(models.Model):
@@ -68,6 +69,12 @@ class RoommateApplication(models.Model):
         decimal_places=2,
     )
 
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('roommate_detail', kwargs={'roommate_pk': self.pk})
+
     def find_compatible_roommates(self):
         # Exclude self!
         roommates = self.__class__.objects.exclude(pk=self.pk)
@@ -112,6 +119,12 @@ class Apartment(models.Model):
     )
 
     address = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('apartment_detail', kwargs={'apartment_pk': self.pk})
 
     def find_compatible_tenants(self):
         return RoommateApplication.objects.filter(
