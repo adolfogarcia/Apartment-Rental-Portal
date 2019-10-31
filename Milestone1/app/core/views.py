@@ -47,17 +47,9 @@ def good_roommate_list(request):
     if user_pk is not None:
         user = models.RoommateApplication.objects.get(pk=user_pk)
     else:
-        user = None
+        raise EnvironmentError("You must be logged in first")
 
-    roommates = models.RoommateApplication.objects.exclude(pk=user_pk)
-
-    # Find similar roommates
-    roommates = roommates.filter(
-        gender=user.looking_for_gender,
-        cleanliness=user.cleanliness,
-        year=user.year,
-        smoking=user.smoking,
-    )
+    roommates = user.find_compatible_roommates()
 
     return render(request, 'roommate_list.html', {
         'user': user,

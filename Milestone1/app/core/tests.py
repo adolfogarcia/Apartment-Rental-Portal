@@ -138,7 +138,14 @@ class TestViews(TestCase):
         )
 
     def test_good_roommate_list(self):
-        pass
+        # Login as Adolfo
+        self.login(self.roommate)
+
+        response = self.client.get(reverse('good_roommate_list'))
+
+        # Compatible roommate should be in last, incompat should not
+        self.assertContains(response, self.compat_roommate.name)
+        self.assertNotContains(response, self.incompat_roommate.name)
 
     def test_roommate_detail(self):
         response = self.client.get(reverse('roommate_detail', kwargs={'roommate_pk': self.roommate.pk}))

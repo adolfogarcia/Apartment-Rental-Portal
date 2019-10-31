@@ -69,7 +69,11 @@ class RoommateApplication(models.Model):
     )
 
     def find_compatible_roommates(self):
-        roommates = self.__class__.objects.filter(
+        # Exclude self!
+        roommates = self.__class__.objects.exclude(pk=self.pk)
+
+        # Filter good criteria
+        roommates = roommates.filter(
             year=self.year,
             cleanliness=self.cleanliness,
             price_ceiling__gte=self.price_floor,
@@ -77,6 +81,7 @@ class RoommateApplication(models.Model):
             smoking=self.smoking,
         )
 
+        # Filter looking for gender
         if self.looking_for_gender != self.ANY:
             roommates = roommates.filter(
                 looking_for_gender=self.looking_for_gender,
