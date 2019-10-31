@@ -117,7 +117,25 @@ class TestViews(TestCase):
         self.assertContains(response, 'Testdudette')
 
     def test_roommate_list(self):
-        pass
+        """Make sure list is populated correctly"""
+        roommate_list_url = reverse('roommate_list')
+
+        response = self.client.get(roommate_list_url)
+
+        # All users should be in the list
+        self.assertContains(response, self.roommate.name)
+        self.assertContains(response, self.compat_roommate.name)
+        self.assertContains(response, self.incompat_roommate.name)
+
+        # Login as Adolfo
+        self.login(self.roommate)
+
+        # Now Adolfo should be logged in
+        response = self.client.get(roommate_list_url)
+        self.assertContains(
+            response,
+            f"{self.roommate.name}, say hello to your new roommates"
+        )
 
     def test_good_roommate_list(self):
         pass
