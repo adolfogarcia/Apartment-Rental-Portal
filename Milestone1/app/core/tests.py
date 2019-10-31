@@ -19,6 +19,11 @@ class TestApartmentModel(TestCase):
 
 
 class TestViews(TestCase):
+    def login(self, roommate):
+        session = self.client.session
+        session['user'] = roommate.pk
+        session.save()
+
     @classmethod
     def setUpTestData(cls):
         cls.roommate = RoommateApplication.objects.create(
@@ -70,9 +75,7 @@ class TestViews(TestCase):
         self.assertTrue(reverse('roommate_form') in response.url)
 
         # Make the user into Adolfo
-        session = self.client.session
-        session['user'] = self.roommate.pk
-        session.save()
+        self.login(self.roommate)
 
         # Try again now that logged in
         response = self.client.get(tenant_home_url)
