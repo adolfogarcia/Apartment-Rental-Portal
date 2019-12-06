@@ -96,6 +96,54 @@ class TestRoommateForm(ApartmentTestCase):
         )
 
 
+class TestApartmentForm(ApartmentTestCase):
+    def test_get(self):
+        """Make sure the empty form can be created initially"""
+        response = self.client.get(reverse('apartment_form'))
+
+    def test_post_valid(self):
+        """Make sure valid form creates object"""
+        apartment_form_url = reverse('apartment_form')
+        _ = self.client.get(apartment_form_url)
+
+        csrftoken = self.client.cookies['csrftoken']
+
+        self.client.post(apartment_form_url, data={
+            'csrfmiddlewaretoken': csrftoken,
+            'name': 'The White House',
+            'num_rooms': 1,
+            'num_bath': 1,
+            'num_kitchen': 1,
+            'price': 1000.00,
+            'address': '1215 NE Myrtle St.',
+        })
+
+        apartment = Apartment.objects.order_by('id').last()
+
+        # Object successfully created
+        self.assertEqual(apartment.name, 'The White House')
+
+    def test_post_invalid(self):
+        """Make sure invalid form submission fails"""
+        apartment_form_url = reverse('apartment_form')
+        _ = self.client.get(apartment_form_url)
+
+        csrftoken = self.client.cookies['csrftoken']
+
+        response = self.client.post(apartment_form_url, follow=True, data={
+            'csrfmiddlewaretoken': csrftoken,  # Token valid
+            'name': 'Name that is way way too long this won\'t work',
+            'num_rooms': 1,
+            'num_bath': 1,
+            'num_kitchen': 1,
+            'price': 1000.00,
+            'address': '1215 NE Myrtle St.',
+        })
+
+        # Failed, no redirect
+        self.assertFalse(response.redirect_chain)
+
+
 class TestApartmentModel(ApartmentTestCase):
     def test_find_compatible_tenants(self):
         self.assertQuerysetEqual(
@@ -193,6 +241,10 @@ class TestViews(ApartmentTestCase):
         self.assertContains(response, self.compat_roommate.name)
         self.assertNotContains(response, self.incompat_roommate.name)
 
+    def test_good_roommate_list_not_logged_in(self):
+        with self.assertRaises(EnvironmentError):
+            self.client.get(reverse('good_roommate_list'))
+
     def test_roommate_detail(self):
         roommate = self.roommate
         roommate_url = roommate.get_absolute_url()
@@ -200,10 +252,19 @@ class TestViews(ApartmentTestCase):
         self.assertContains(response, roommate.name)
         self.assertTemplateUsed(response, 'roommate_detail.html')
 
-    def test_apartment_list(self):
+    def test_apartment_list_not_logged_in(self):
         """Make sure all apartments are on list"""
         response = self.client.get(reverse('apartment_list'))
 
+        self.assertContains(response, self.compat_apartment.name)
+        self.assertContains(response, self.incompat_apartment.name)
+
+    def test_apartment_list_logged_in(self):
+        """Make sure all apartments are still on list"""
+        self.login(self.compat_roommate)
+        response = self.client.get(reverse('apartment_list'))
+
+        self.assertContains(response, self.compat_roommate.name)
         self.assertContains(response, self.compat_apartment.name)
         self.assertContains(response, self.incompat_apartment.name)
 
